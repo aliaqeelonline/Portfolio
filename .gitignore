@@ -1,0 +1,9 @@
+# Private source material and local tooling never belong in the public site.
+*.pdf
+work/
+attachments/
+node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
