@@ -2,7 +2,7 @@
 (() => {
   let preference;
   try { preference = localStorage.getItem('ali-aqeel-theme'); } catch { /* Storage may be blocked. */ }
-  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // A first visit uses the site's black identity; explicit choices persist.
   document.documentElement.dataset.theme = ['light', 'dark'].includes(preference)
-    ? preference : (systemDark ? 'dark' : 'light');
+    ? preference : 'dark';
 })();

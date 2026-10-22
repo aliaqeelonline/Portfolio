@@ -4,7 +4,9 @@ A responsive, editorial portfolio focused on data engineering, analytics, entrep
 
 ## Features
 
-- Light and dark themes with saved preference and system-theme fallback.
+- Default black/charcoal theme with silver accents and a saved, optional neutral-gray light theme.
+- A subtle gray background grid that gently shifts and scales with scrolling.
+- Glass-inspired surfaces with readable solid fallbacks and limited backdrop blur.
 - Mobile navigation with Escape dismissal, destination focus, and active-section indicators.
 - Responsive data-workflow and model-architecture illustrations made with CSS and inline SVG.
 - Scroll reveals that respect reduced-motion preferences and remain readable without JavaScript.
@@ -28,6 +30,7 @@ Portfolio/
 ├── docs/
 │   ├── CONTENT_REVIEW.md      # Content provenance and outstanding review items
 │   ├── VERIFICATION.md        # Completed checks and verification limitations
+│   ├── previews/              # Local redesign review screenshots (not runtime assets)
 │   └── PULL_REQUEST_DRAFT.md  # Prepared description for a future reviewed PR
 ├── .gitignore
 ├── .nojekyll
@@ -55,11 +58,23 @@ Then visit `http://localhost:8000`. Stop the server with Ctrl+C. This server is 
 - Replace the project’s “Repository & demo not provided” text with real, verified links when supplied. Do not create placeholder links.
 - Update the Tswer role after its November 2026 start is confirmed. It is intentionally marked **upcoming**, not current.
 - Public GitHub and LinkedIn profile links were explicitly approved by the owner. Do not add an email, phone number, or other contact detail without approval.
-- Edit CSS custom properties at the top of `css/style.css` to adjust the palette. The dark-theme overrides use `data-theme="dark"`.
+- Edit CSS custom properties at the top of `css/style.css` to adjust the palette. Black is the default; the optional light palette uses `data-theme="light"`. An explicit saved choice is respected, including an existing visitor's light preference.
 - All illustrations are conceptual, not screenshots of production dashboards. The 88.57% model accuracy is a résumé-reported result; it has not been independently benchmarked.
 - The footer year updates automatically; update the static fallback in HTML if maintaining the site without JavaScript.
 
 Keep the original résumé, extracted résumé text, credentials, and private source materials outside this repository. PDF and common local-secret paths are ignored as an additional safeguard.
+
+## Visual effects and performance
+
+The original content, section order, typography, and responsive layouts are retained. A black and graphite palette replaces the olive/lime styling, including the original data diagrams and favicon. Soft highlights and translucent surfaces create depth without adding external assets or dependencies.
+
+The grid lives in one fixed, clipped viewport layer. A shared `requestAnimationFrame` callback updates its `translate3d` and scale transform and the active navigation. The scroll listener only records the scroll position and requests a frame. Section positions and document dimensions are cached on resize/layout changes, not read during animation. Grid movement is bounded to 36px vertically, 14px horizontally, and 4.5% scale across the page. The easing loop stops when settled and pauses when the tab is hidden.
+
+Only the header and, on desktop, the hero illustration and contact form use backdrop blur. Repeated skill, venture, education, and training cards use translucent gradients and border highlights without blur. Unsupported backdrop filters fall back to solid readable surfaces. `prefers-reduced-transparency` also selects solid surfaces when supported by the browser.
+
+`prefers-reduced-motion` makes the grid static, removes its compositor hint, disables smooth scrolling, and keeps all content visible. Preference changes during a visit are handled immediately. Without JavaScript, the dark design and static grid remain available.
+
+The light toggle is retained for visitors who prefer a lighter reading surface, with muted neutral grays instead of harsh white sections. First-time visits use dark mode regardless of the operating-system theme; manual choices persist.
 
 ## GitHub Pages deployment
 
@@ -92,7 +107,7 @@ In the separately authorized integration task:
 
 ## Review and verification
 
-See `docs/CONTENT_REVIEW.md` for the extracted professional summary, content decisions, and missing information, and `docs/VERIFICATION.md` for the completed checks and their limitations. Changes are intended for review before a commit or pull request, following the final task instruction. A proposed pull-request description is in `docs/PULL_REQUEST_DRAFT.md`.
+See `docs/CONTENT_REVIEW.md` for the extracted professional summary, content decisions, and missing information, and `docs/VERIFICATION.md` for the completed checks and their limitations. Desktop, tablet, and mobile redesign screenshots are indexed in [`docs/previews/README.md`](docs/previews/README.md). The black/glass redesign is local and uncommitted for review; nothing has been pushed or merged for this update. The original implementation's proposed pull-request description is in `docs/PULL_REQUEST_DRAFT.md`.
 
 For a quick syntax check, if Node.js is available:
 

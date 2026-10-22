@@ -3,25 +3,18 @@
 (() => {
   const root = document.documentElement;
   const themeButton = document.querySelector('.theme-toggle');
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-  let hasSavedTheme = false;
-  try { hasSavedTheme = ['light', 'dark'].includes(localStorage.getItem('ali-aqeel-theme')); } catch { /* Private browsing can block storage. */ }
 
   const updateTheme = (theme) => {
     root.dataset.theme = theme;
     themeButton.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`);
-    document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#141a17' : '#f5f5ef';
+    document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#09090b' : '#dedee2';
   };
-  updateTheme(root.dataset.theme || 'light');
+  updateTheme(root.dataset.theme || 'dark');
   themeButton.hidden = false;
   themeButton.addEventListener('click', () => {
     const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
     updateTheme(theme);
-    hasSavedTheme = true;
     try { localStorage.setItem('ali-aqeel-theme', theme); } catch { /* The toggle still works for this visit. */ }
-  });
-  systemTheme.addEventListener('change', (event) => {
-    if (!hasSavedTheme) updateTheme(event.matches ? 'dark' : 'light');
   });
 
   const menuButton = document.querySelector('.menu-toggle');
@@ -61,30 +54,90 @@
     if (!mobileQuery.matches && document.activeElement === menuButton) navLinks[0].focus();
   });
 
-  // Track all content sections so navigation remains accurate around long sections.
+  // Cache geometry on layout changes, never inside the scroll animation loop.
+  // Navigation and the grid share one event-driven frame; there is no idle loop.
   const sections = [...document.querySelectorAll('main > section')];
-  let scrollQueued = false;
+  const grid = document.querySelector('.ambient-grid');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let sectionPositions = [];
+  let viewportHeight = window.innerHeight;
+  let scrollRange = 1;
+  let latestScroll = window.scrollY;
+  let gridProgress = 0;
+  let frameId = 0;
+  let measureId = 0;
+  let lastFrameTime = 0;
+  let activeSection = '';
+
   const updateActiveSection = () => {
-    const marker = window.innerHeight * 0.3;
+    const marker = latestScroll + viewportHeight * 0.3;
     let current = sections[0].id;
-    for (const section of sections) {
-      if (section.getBoundingClientRect().top <= marker) current = section.id;
+    for (const section of sectionPositions) {
+      if (section.top <= marker) current = section.id;
     }
+    if (current === activeSection) return;
+    activeSection = current;
     navLinks.forEach((link) => {
       if (link.hash === `#${current}`) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');
     });
-    scrollQueued = false;
   };
-  const queueScrollUpdate = () => {
-    if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(updateActiveSection); }
-  };
-  window.addEventListener('scroll', queueScrollUpdate, { passive: true });
-  window.addEventListener('resize', queueScrollUpdate, { passive: true });
-  updateActiveSection();
 
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if ('IntersectionObserver' in window && !reducedMotion.matches) {
+  const renderFrame = (time) => {
+    frameId = 0;
+    updateActiveSection();
+    if (!grid || reducedMotion.matches) { lastFrameTime = 0; return; }
+
+    const target = Math.min(1, Math.max(0, latestScroll / scrollRange));
+    const elapsed = lastFrameTime ? Math.min(64, time - lastFrameTime) : 16;
+    lastFrameTime = time;
+    gridProgress += (target - gridProgress) * (1 - Math.exp(-elapsed / 100));
+    const settled = Math.abs(target - gridProgress) < 0.0001;
+    if (settled) gridProgress = target;
+    // Bounded to 4.5% scale and 36px travel across the entire document.
+    grid.style.transform = `translate3d(${(-14 * gridProgress).toFixed(3)}px, ${(-36 * gridProgress).toFixed(3)}px, 0) scale(${(1 + 0.045 * gridProgress).toFixed(5)})`;
+    if (!settled) frameId = requestAnimationFrame(renderFrame);
+    else lastFrameTime = 0;
+  };
+
+  const requestFrame = () => {
+    if (!frameId && !document.hidden) frameId = requestAnimationFrame(renderFrame);
+  };
+  const measureLayout = () => {
+    measureId = 0;
+    latestScroll = window.scrollY;
+    viewportHeight = window.innerHeight;
+    scrollRange = Math.max(1, root.scrollHeight - viewportHeight);
+    sectionPositions = sections.map((section) => ({ id: section.id, top: section.getBoundingClientRect().top + latestScroll }));
+    requestFrame();
+  };
+  const requestMeasurement = () => {
+    if (!measureId && !document.hidden) measureId = requestAnimationFrame(measureLayout);
+  };
+  window.addEventListener('scroll', () => {
+    latestScroll = window.scrollY;
+    requestFrame();
+  }, { passive: true });
+  window.addEventListener('resize', requestMeasurement, { passive: true });
+  window.addEventListener('pageshow', requestMeasurement);
+  if (typeof ResizeObserver === 'function') new ResizeObserver(requestMeasurement).observe(document.body);
+  else window.addEventListener('load', requestMeasurement);
+  reducedMotion.addEventListener('change', () => {
+    if (grid) grid.style.removeProperty('transform');
+    gridProgress = 0;
+    lastFrameTime = 0;
+    requestFrame();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cancelAnimationFrame(frameId);
+      cancelAnimationFrame(measureId);
+      frameId = measureId = lastFrameTime = 0;
+    } else requestMeasurement();
+  });
+  measureLayout();
+
+  if (typeof IntersectionObserver === 'function' && !reducedMotion.matches) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
