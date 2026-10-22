@@ -5,7 +5,7 @@ A responsive, editorial portfolio focused on data engineering, analytics, entrep
 ## Features
 
 - Default black/charcoal theme with silver accents and a saved, optional neutral-gray light theme.
-- A subtle gray background grid that gently shifts and scales with scrolling.
+- A subtle, tightly spaced gray background grid that remains static while scrolling.
 - Glass-inspired surfaces with readable solid fallbacks and limited backdrop blur.
 - Mobile navigation with Escape dismissal, destination focus, and active-section indicators.
 - Responsive data-workflow and model-architecture illustrations made with CSS and inline SVG.
@@ -68,13 +68,13 @@ Keep the original résumé, extracted résumé text, credentials, and private so
 
 The original content, section order, typography, and responsive layouts are retained. A black and graphite palette replaces the olive/lime styling, including the original data diagrams and favicon. Soft highlights and translucent surfaces create depth without adding external assets or dependencies.
 
-The grid lives in one fixed, clipped viewport layer. A shared `requestAnimationFrame` callback updates its `translate3d` and scale transform and the active navigation. The scroll listener only records the scroll position and requests a frame. Section positions and document dimensions are cached on resize/layout changes, not read during animation. The grid completes two smooth grow/shrink cycles over the document: cell size varies by 18% on desktop and 12% on smaller screens, while drift stays within 14px horizontally and 22px vertically. The easing loop stops when settled and pauses when the tab is hidden.
+The grid lives in one fixed, clipped viewport layer and uses a static 12px pattern at every viewport size. Its radial mask and the existing section surfaces preserve the intended fading, layering, and areas where the grid is hidden. The scroll listener remains only for the active navigation indicator and schedules one event-driven frame; it performs no grid style writes.
 
-The hero's Data → Decision Journey illustration intentionally uses an independent 18px radial-dot pattern. It stays static and distinguishes the panel from the animated page grid.
+The hero's Data → Decision Journey illustration intentionally uses an independent 18px radial-dot pattern. It stays static and distinguishes the panel from the page grid.
 
 Only the header and, on desktop, the hero illustration and contact form use backdrop blur. Repeated skill, venture, education, and training cards use translucent gradients and border highlights without blur. Unsupported backdrop filters fall back to solid readable surfaces. `prefers-reduced-transparency` also selects solid surfaces when supported by the browser.
 
-`prefers-reduced-motion` makes the grid static, removes its compositor hint, disables smooth scrolling, and keeps all content visible. Preference changes during a visit are handled immediately. Without JavaScript, the dark design and static grid remain available.
+`prefers-reduced-motion` disables smooth scrolling and keeps all content visible. The grid is always static and has no compositor hint or JavaScript transform. Preference changes during a visit are handled immediately. Without JavaScript, the dark design, grid, navigation, and content remain available.
 
 The light toggle is retained for visitors who prefer a lighter reading surface, with muted neutral grays instead of harsh white sections. First-time visits use dark mode regardless of the operating-system theme; manual choices persist.
 

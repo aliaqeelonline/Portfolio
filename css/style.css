@@ -18,7 +18,7 @@
   --section-wash: rgb(17 17 20 / 62%);
   --sheen: rgb(188 188 200 / 9%);
   --edge: rgb(188 188 200 / 15%);
-  --grid-line: rgb(110 110 120 / 18%);
+  --grid-line: rgb(110 110 120 / 12%);
   --panel-dot: rgb(148 148 160 / 20%);
   --ambient: rgb(100 100 112 / 9%);
   --button-top: #e3e3e8;
@@ -50,7 +50,7 @@
   --section-wash: rgb(210 210 217 / 55%);
   --sheen: rgb(248 248 252 / 50%);
   --edge: rgb(248 248 252 / 70%);
-  --grid-line: rgb(100 100 112 / 13%);
+  --grid-line: rgb(100 100 112 / 9%);
   --panel-dot: rgb(76 76 88 / 18%);
   --ambient: rgb(100 100 112 / 5%);
   --button-top: #3d3d46;
@@ -60,18 +60,16 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 108px; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; isolation: isolate; }
-/* One clipped, viewport-sized decorative layer. Only its child transform moves. */
+/* One clipped, viewport-sized decorative layer with a static technical grid. */
 .site-atmosphere { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; background: radial-gradient(ellipse at 75% 25%, var(--ambient), transparent 65%); }
 .ambient-grid {
   position: absolute;
   inset: -64px;
   background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 64px 64px;
+  background-size: 12px 12px;
   -webkit-mask-image: radial-gradient(ellipse at 65% 35%, #000 15%, transparent 78%);
   mask-image: radial-gradient(ellipse at 65% 35%, #000 15%, transparent 78%);
-  transform-origin: 50% 35%;
 }
-@media (prefers-reduced-motion: no-preference) { .ambient-grid { will-change: transform; } }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 a { color: inherit; text-decoration: none; }
 button, input, textarea { font: inherit; }
@@ -314,7 +312,6 @@ h1 { font-size: clamp(3.25rem, 5.1vw, 4.8rem); margin-top: 26px; }
 @media (max-width: 800px) { .training-date { flex-basis: calc(100% - 60px); } }
 @media (max-width: 560px) { .training-date { flex-basis: calc(100% - 46px); } }
 @media (prefers-reduced-motion: reduce) {
-  .ambient-grid { transform: none !important; will-change: auto; }
   html { scroll-behavior: auto; }*, *::before, *::after { animation: none !important; transition: none !important; }.reveal.is-pending { opacity: 1; transform: none; }.button:hover, .skill-card:hover, .venture-card:hover, .featured-project:hover, .reveal.skill-card:hover, .reveal.venture-card:hover, .reveal.featured-project:hover, .reveal.venture-card:focus-within, .reveal.featured-project:focus-within, .icon-button:hover { transform: none; }
 }
 @media (prefers-reduced-transparency: reduce) {

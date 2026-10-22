@@ -54,19 +54,15 @@
     if (!mobileQuery.matches && document.activeElement === menuButton) navLinks[0].focus();
   });
 
-  // Cache geometry on layout changes, never inside the scroll animation loop.
-  // Navigation and the grid share one event-driven frame; there is no idle loop.
+  // Cache section geometry on layout changes. Scroll updates only the active
+  // navigation state; the decorative background grid is entirely static CSS.
   const sections = [...document.querySelectorAll('main > section')];
-  const grid = document.querySelector('.ambient-grid');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let sectionPositions = [];
   let viewportHeight = window.innerHeight;
-  let scrollRange = 1;
   let latestScroll = window.scrollY;
-  let gridProgress = 0;
   let frameId = 0;
   let measureId = 0;
-  let lastFrameTime = 0;
   let activeSection = '';
 
   const updateActiveSection = () => {
@@ -83,29 +79,9 @@
     });
   };
 
-  const renderFrame = (time) => {
+  const renderFrame = () => {
     frameId = 0;
     updateActiveSection();
-    if (!grid || reducedMotion.matches) { lastFrameTime = 0; return; }
-
-    const target = Math.min(1, Math.max(0, latestScroll / scrollRange));
-    const elapsed = lastFrameTime ? Math.min(64, time - lastFrameTime) : 16;
-    lastFrameTime = time;
-    gridProgress += (target - gridProgress) * (1 - Math.exp(-elapsed / 100));
-    const settled = Math.abs(target - gridProgress) < 0.0001;
-    if (settled) gridProgress = target;
-    // Two smooth expansion/contraction cycles across the document. Desktop
-    // cells vary by 18%; smaller screens use 12% to keep motion comfortable.
-    const phase = gridProgress * Math.PI * 4;
-    const wave = (1 - Math.cos(phase)) / 2;
-    const scaleRange = mobileQuery.matches ? 0.12 : 0.18;
-    const horizontalRange = mobileQuery.matches ? 8 : 14;
-    const verticalRange = mobileQuery.matches ? 12 : 22;
-    const x = Math.sin(phase / 2) * horizontalRange;
-    const y = Math.sin(phase) * verticalRange;
-    grid.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0) scale(${(1 + scaleRange * wave).toFixed(5)})`;
-    if (!settled) frameId = requestAnimationFrame(renderFrame);
-    else lastFrameTime = 0;
   };
 
   const requestFrame = () => {
@@ -115,7 +91,6 @@
     measureId = 0;
     latestScroll = window.scrollY;
     viewportHeight = window.innerHeight;
-    scrollRange = Math.max(1, root.scrollHeight - viewportHeight);
     sectionPositions = sections.map((section) => ({ id: section.id, top: section.getBoundingClientRect().top + latestScroll }));
     requestFrame();
   };
@@ -130,17 +105,11 @@
   window.addEventListener('pageshow', requestMeasurement);
   if (typeof ResizeObserver === 'function') new ResizeObserver(requestMeasurement).observe(document.body);
   else window.addEventListener('load', requestMeasurement);
-  reducedMotion.addEventListener('change', () => {
-    if (grid) grid.style.removeProperty('transform');
-    gridProgress = 0;
-    lastFrameTime = 0;
-    requestFrame();
-  });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       cancelAnimationFrame(frameId);
       cancelAnimationFrame(measureId);
-      frameId = measureId = lastFrameTime = 0;
+      frameId = measureId = 0;
     } else requestMeasurement();
   });
   measureLayout();

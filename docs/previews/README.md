@@ -20,15 +20,18 @@ Captured from the local implementation in Chromium on October 22, 2026. These ar
 | --- | --- |
 | [Hero dotted panel](hero-dotted-panel.png) | Restored static gray dots inside Data → Decision Journey |
 | [Deep Learning hover](deep-learning-hover.png) | Full project panel with the shared hover border, shadow, and lift |
-| [Grid — top, contracted](grid-top-contracted.png) | Page progress 0% |
-| [Grid — quarter, expanded](grid-quarter-expanded.png) | Page progress 25%, approximately 18% larger cells |
-| [Grid — middle, contracted](grid-middle-contracted.png) | Page progress 50% |
-| [Grid — three-quarter, expanded](grid-three-quarter-expanded.png) | Page progress 75%, approximately 18% larger cells |
-| [Grid — bottom, contracted](grid-bottom-contracted.png) | Page progress 100% |
+| [Static grid — desktop](grid-static-desktop.png) | Fixed 12px page grid at 1440 × 1000 |
+| [Static grid — tablet](grid-static-tablet.png) | Fixed 12px page grid at 768 × 1024 |
+| [Static grid — mobile](grid-static-mobile.png) | Fixed 12px page grid at 390 × 844 |
+| [Grid — top reference](grid-top-contracted.png) | Previous contracted-state reference |
+| [Grid — quarter reference](grid-quarter-expanded.png) | Previous animated-state verification |
+| [Grid — middle reference](grid-middle-contracted.png) | Previous contracted-state reference |
+| [Grid — three-quarter reference](grid-three-quarter-expanded.png) | Previous animated-state verification |
+| [Grid — bottom reference](grid-bottom-contracted.png) | Previous contracted-state reference |
 | [Tablet projects](fix-tablet-projects.png) | Updated 768 × 1024 layout |
 | [Mobile hero](fix-mobile-hero.png) | Updated 390 × 844 layout |
 
-The mobile contact image contains test input entered during verification; the form does not send or store it. The grid-position series demonstrates the difference in cell size, while the live page shows the eased transition and its natural reversal during upward scrolling. With reduced motion enabled the grid stays static.
+The mobile contact image contains test input entered during verification; the form does not send or store it. The archived grid-position series documents the earlier animated implementation. The current page uses a fixed 12px grid at every scroll position and viewport size.
 
 ![Black desktop portfolio with gray grid and charcoal glass panels](desktop.png)
 
