@@ -94,8 +94,16 @@
     gridProgress += (target - gridProgress) * (1 - Math.exp(-elapsed / 100));
     const settled = Math.abs(target - gridProgress) < 0.0001;
     if (settled) gridProgress = target;
-    // Bounded to 4.5% scale and 36px travel across the entire document.
-    grid.style.transform = `translate3d(${(-14 * gridProgress).toFixed(3)}px, ${(-36 * gridProgress).toFixed(3)}px, 0) scale(${(1 + 0.045 * gridProgress).toFixed(5)})`;
+    // Two smooth expansion/contraction cycles across the document. Desktop
+    // cells vary by 18%; smaller screens use 12% to keep motion comfortable.
+    const phase = gridProgress * Math.PI * 4;
+    const wave = (1 - Math.cos(phase)) / 2;
+    const scaleRange = mobileQuery.matches ? 0.12 : 0.18;
+    const horizontalRange = mobileQuery.matches ? 8 : 14;
+    const verticalRange = mobileQuery.matches ? 12 : 22;
+    const x = Math.sin(phase / 2) * horizontalRange;
+    const y = Math.sin(phase) * verticalRange;
+    grid.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0) scale(${(1 + scaleRange * wave).toFixed(5)})`;
     if (!settled) frameId = requestAnimationFrame(renderFrame);
     else lastFrameTime = 0;
   };

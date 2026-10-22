@@ -68,7 +68,9 @@ Keep the original résumé, extracted résumé text, credentials, and private so
 
 The original content, section order, typography, and responsive layouts are retained. A black and graphite palette replaces the olive/lime styling, including the original data diagrams and favicon. Soft highlights and translucent surfaces create depth without adding external assets or dependencies.
 
-The grid lives in one fixed, clipped viewport layer. A shared `requestAnimationFrame` callback updates its `translate3d` and scale transform and the active navigation. The scroll listener only records the scroll position and requests a frame. Section positions and document dimensions are cached on resize/layout changes, not read during animation. Grid movement is bounded to 36px vertically, 14px horizontally, and 4.5% scale across the page. The easing loop stops when settled and pauses when the tab is hidden.
+The grid lives in one fixed, clipped viewport layer. A shared `requestAnimationFrame` callback updates its `translate3d` and scale transform and the active navigation. The scroll listener only records the scroll position and requests a frame. Section positions and document dimensions are cached on resize/layout changes, not read during animation. The grid completes two smooth grow/shrink cycles over the document: cell size varies by 18% on desktop and 12% on smaller screens, while drift stays within 14px horizontally and 22px vertically. The easing loop stops when settled and pauses when the tab is hidden.
+
+The hero's Data → Decision Journey illustration intentionally uses an independent 18px radial-dot pattern. It stays static and distinguishes the panel from the animated page grid.
 
 Only the header and, on desktop, the hero illustration and contact form use backdrop blur. Repeated skill, venture, education, and training cards use translucent gradients and border highlights without blur. Unsupported backdrop filters fall back to solid readable surfaces. `prefers-reduced-transparency` also selects solid surfaces when supported by the browser.
 

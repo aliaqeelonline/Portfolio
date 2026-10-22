@@ -14,7 +14,21 @@ Captured from the local implementation in Chromium on October 22, 2026. These ar
 | [Mobile — navigation](mobile-menu.png) | 390 × 844 |
 | [Mobile — contact validation preview](mobile-contact.png) | 390 × 844 |
 
-The mobile contact image contains test input entered during verification; the form does not send or store it. Still images do not show the subtle scroll-reactive grid effect. Open the local `index.html` to review the animation; with reduced motion enabled the grid stays static.
+## Targeted interaction fixes
+
+| Preview | Purpose |
+| --- | --- |
+| [Hero dotted panel](hero-dotted-panel.png) | Restored static gray dots inside Data → Decision Journey |
+| [Deep Learning hover](deep-learning-hover.png) | Full project panel with the shared hover border, shadow, and lift |
+| [Grid — top, contracted](grid-top-contracted.png) | Page progress 0% |
+| [Grid — quarter, expanded](grid-quarter-expanded.png) | Page progress 25%, approximately 18% larger cells |
+| [Grid — middle, contracted](grid-middle-contracted.png) | Page progress 50% |
+| [Grid — three-quarter, expanded](grid-three-quarter-expanded.png) | Page progress 75%, approximately 18% larger cells |
+| [Grid — bottom, contracted](grid-bottom-contracted.png) | Page progress 100% |
+| [Tablet projects](fix-tablet-projects.png) | Updated 768 × 1024 layout |
+| [Mobile hero](fix-mobile-hero.png) | Updated 390 × 844 layout |
+
+The mobile contact image contains test input entered during verification; the form does not send or store it. The grid-position series demonstrates the difference in cell size, while the live page shows the eased transition and its natural reversal during upward scrolling. With reduced motion enabled the grid stays static.
 
 ![Black desktop portfolio with gray grid and charcoal glass panels](desktop.png)
 

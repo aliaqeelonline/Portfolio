@@ -4,7 +4,8 @@ Black/glass redesign verified October 22, 2026 using the installed Chromium brow
 
 ## Results
 
-- **44 browser assertions passed** (40 layout/behavior checks and four transparency/contrast fallback checks), with zero JavaScript errors.
+- **44 redesign assertions passed** (40 layout/behavior checks and four transparency/contrast fallback checks), with zero JavaScript errors.
+- A further **27 targeted assertions passed** for the restored hero dots, Deep Learning card hover, more visible bidirectional grid animation, responsive layouts, and performance behavior.
 - Compared the rendered main content and link destinations with the existing committed HTML: professional content, sections, and links are unchanged.
 - No horizontal overflow at 320, 375, 390, 560, 600, 768, 800, 1024, 1440, or 1920 CSS pixels.
 - Captured and visually reviewed desktop, tablet, mobile, both themes, project panels, skills, and the contact form. Screenshots are in `docs/previews/`.
@@ -21,12 +22,15 @@ Black/glass redesign verified October 22, 2026 using the installed Chromium brow
 ## Grid and glass verification
 
 - The decorative grid uses gray pigment, is hidden from assistive technology, and cannot intercept clicks.
-- The grid transform changes on scroll and stays within 4.5% scale, 14px horizontal travel, and 36px vertical travel.
+- The grid completes two grow/shrink cycles over the page. Desktop cell size alternates between approximately 100% and 118%; mobile peaks at 112%. Drift stays within 14px horizontally and 22px vertically.
+- Samples at 0%, 25%, 50%, 75%, and 100% page progress measured approximately **1.00, 1.18, 1.00, 1.18, and 1.00** scale. The same transitions reversed correctly when scrolling upward.
 - Instrumented geometry reads: **zero `getBoundingClientRect()` calls during the sampled scroll animation**, after the initial cache settled.
 - Instrumented grid styles: **zero writes during the sampled idle period**, after easing settled.
 - Backdrop blur is limited to three desktop elements (navbar, hero illustration, contact form); at tablet/mobile widths only the navbar uses blur. Repeated cards use no backdrop filter.
 - Emulated `prefers-reduced-transparency` produces opaque panels with no blur.
 - Simulated unsupported backdrop-filter support by disabling only the CSS enhancement group: default panels remain opaque/readable and the gray grid remains available.
+- The Data → Decision Journey panel uses its own static 18px radial-dot pattern with low-opacity neutral-gray dots; the global grid remains a separate 64px linear pattern.
+- The full Deep Learning panel matches neighboring project cards with the shared border, shadow, and 4px lift. Existing link focus outlines and containing-card focus feedback remain visible. Reduced motion suppresses the lift.
 
 ## Limits
 
