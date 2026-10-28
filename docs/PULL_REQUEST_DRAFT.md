@@ -6,7 +6,7 @@
 
 Replace the initial repository placeholder with a complete static portfolio for Ali Aqeel's work in data engineering, analytics, entrepreneurship, and training. Add résumé-based skills, employment, projects and ventures, education, coursework, and approved social links in a responsive light/dark design.
 
-Implement keyboard-accessible mobile navigation, persisted themes, active section indicators, reduced-motion-aware entrance animations, and a frontend-only contact form. The form validates input but explicitly states that messages are not sent or stored. Tswer is shown as an upcoming November 2026 volunteer role; unavailable project links are marked rather than invented.
+Implement keyboard-accessible mobile navigation, persisted themes, active section indicators, reduced-motion-aware entrance animations, and a frontend-only contact form. The form validates input but explicitly states that messages are not sent or stored. Tswer is shown as a current volunteer role from November 2026; unavailable project links are marked rather than invented.
 
 Document content editing, missing information, GitHub Pages deployment, and the separately planned Forminit/reCAPTCHA integration. Keep the résumé and private source material outside the repository. No runtime dependencies or build step are needed.
 

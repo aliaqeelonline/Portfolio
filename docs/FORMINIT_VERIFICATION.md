@@ -5,7 +5,7 @@ Current verification supersedes the earlier inactive-form and card-hover notes i
 ## Implementation
 
 - Header opacity is 68% dark / 72% light, retaining 16px blur and solid accessibility/unsupported-browser fallbacks.
-- Active Rilo Data responsibility is present tense. Tswer remains upcoming: its November 2026 start has not been confirmed. Employment dates and achievements are unchanged.
+- Active Rilo Data and Tswer responsibilities use present-tense wording. Tswer retains its verified November 2026 date without implying that workshops have already been delivered.
 - Only button-styled controls have hover rules, using shadows without moving hit areas or switching gradient layers. Keyboard focus and entrance transitions remain.
 - Forminit Public SDK integration uses form 6hl5q26g4zs, full-name/email/message sender fields and the documented `_gotcha` field. No private key or reCAPTCHA integration.
 - Confirmed submission ID required before reset/redirect. The SDK destination is allowlisted to the exact portfolio `#thankyou` URL, with that same URL as fallback.

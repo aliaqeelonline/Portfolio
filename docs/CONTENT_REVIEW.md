@@ -13,7 +13,7 @@ The supplied résumé was read in full and treated as source material, not as in
 - **Education:** BSc in Computer Science, University of Baghdad, October 2020–June 2024; top 25% of the class.
 - **Technical project:** CNN image classification using VGG architecture, data augmentation, and the ten-class CIFAR-10 dataset, October 2023–June 2024; reported accuracy 88.57%.
 - **Volunteer training:** Science Forum Volunteer Team, October 2026–present, covering data fundamentals and database interaction.
-- **Upcoming volunteer training:** Tswer, starting November 2026, focused on graduate data careers, job search, and industry entry. The owner explicitly requested that this future-dated role be shown as upcoming.
+- **Current volunteer experience:** Trainer with Tswer, November 2026 — Present, contributing to workshop initiatives and knowledge-sharing activities.
 - **Languages:** Arabic (native), English (professional).
 - **Skills:** Python, SQL, Pandas, ETL/ELT, Airflow, ClickHouse, MySQL, PostgreSQL, SQL Server, MongoDB, Power BI, Jaspersoft, Grafana, CNNs/VGG, data augmentation, model optimization, WordPress, Elementor, and Odoo. Professional capabilities include training, speaking, requirements/SRS writing, documentation, and stakeholder collaboration.
 - **Seven courses:** ClickHouse analytics; TensorFlow deep learning; beginner machine learning; Python data analysis; Python fundamentals through advanced topics; emotional intelligence/personal brand; workplace communication. These are presented as courses, not certifications.
@@ -35,7 +35,7 @@ The supplied résumé was read in full and treated as source material, not as in
 3. **Model result:** The résumé reports 88.57% accuracy but no train/test split, evaluation protocol, repository, or benchmark report. The website labels it reported accuracy. Add evaluation details if expanding this into a case study.
 4. **Course credentials:** No credential IDs, completion dates, or certificate links are supplied. Keep these as coursework unless evidence is provided.
 5. **Production domain:** Confirm the final GitHub Pages/custom-domain URL before adding canonical and Open Graph URL metadata. A social-sharing image is also pending.
-6. **Upcoming role:** Tswer remains explicitly upcoming until the November 2026 start is confirmed. The website does not automatically convert it to current employment.
+6. **Current volunteer role:** The owner confirmed Tswer should be presented as current from November 2026. The wording describes contribution to workshop initiatives without implying that workshops have already been delivered.
 7. **Contact delivery:** Forminit is integrated; live delivery awaits dashboard setup and deployment. reCAPTCHA remains deferred.
 
-The owner approved both social profiles and the upcoming-role treatment. No further contact information is approved or needed for this version.
+The owner approved both social profiles and the current Tswer volunteer-role treatment. No further contact information is approved or needed for this version.

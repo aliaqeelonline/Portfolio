@@ -56,7 +56,7 @@ Then visit `http://localhost:8000`. Stop the server with Ctrl+C. This server is 
 - Duplicate an experience or project article and update its heading, dates, description, and technologies. Keep the portfolio `h1`, section `h2`s, and article `h3`s; the alternate Thank You view has its own `h1`.
 - Experience is sorted by start date, newest first. Some jobs and ventures overlap in the source résumé.
 - Replace the project’s “Repository & demo not provided” text with real, verified links when supplied. Do not create placeholder links.
-- Update the Tswer role after its November 2026 start is confirmed. It is intentionally marked **upcoming**, not current.
+- The Tswer volunteer role is current from November 2026; keep its contribution wording factual unless additional responsibilities are verified.
 - Public GitHub and LinkedIn profile links were explicitly approved by the owner. Do not add an email, phone number, or other contact detail without approval.
 - Edit CSS custom properties at the top of `css/style.css` to adjust the palette. Black is the default; the optional light palette uses `data-theme="light"`. An explicit saved choice is respected, including an existing visitor's light preference.
 - All illustrations are conceptual, not screenshots of production dashboards. The 88.57% model accuracy is a résumé-reported result; it has not been independently benchmarked.
