@@ -34,6 +34,7 @@
   menuButton.addEventListener('click', () => setMenu(menuButton.getAttribute('aria-expanded') !== 'true'));
   navLinks.forEach((link) => link.addEventListener('click', () => {
     setMenu(false);
+    sections.forEach(section => { section.hidden = false; });
     // Move focus to the destination so it never stays in a collapsed menu.
     const section = document.querySelector(link.hash);
     section.setAttribute('tabindex', '-1');
@@ -56,7 +57,7 @@
 
   // Cache section geometry on layout changes. Scroll updates only the active
   // navigation state; the decorative background grid is entirely static CSS.
-  const sections = [...document.querySelectorAll('main > section')];
+  const sections = [...document.querySelectorAll('main > section:not(#thankyou)')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let sectionPositions = [];
   let viewportHeight = window.innerHeight;
@@ -66,6 +67,11 @@
   let activeSection = '';
 
   const updateActiveSection = () => {
+    if (location.hash === '#thankyou') {
+      activeSection = '';
+      navLinks.forEach(link => link.removeAttribute('aria-current'));
+      return;
+    }
     const marker = latestScroll + viewportHeight * 0.3;
     let current = sections[0].id;
     for (const section of sectionPositions) {
@@ -136,15 +142,41 @@
     });
   }
 
-  // Frontend preview only: no network request, storage, endpoint, or delivery claim.
+  const thankyou = document.querySelector('#thankyou');
+  const destination = 'https://aliaqeelonline.github.io/Portfolio/#thankyou';
+  let confirmed = false;
+  try { confirmed = Date.now() - Number(sessionStorage.getItem('portfolio-confirmed-at')) < 1800000; } catch { /* Optional refresh continuity. */ }
+  const showRoute = () => {
+    const wasShowing = !thankyou.hidden;
+    const showing = location.hash === '#thankyou';
+    sections.forEach(section => { section.hidden = showing; });
+    thankyou.hidden = !showing;
+    if (showing) {
+      document.querySelector('#thankyou-message').textContent = confirmed
+        ? 'Your message has been received successfully. I appreciate you taking the time to get in touch and will get back to you as soon as possible.'
+        : 'This is a preview of the confirmation page. Opening this link does not send a message or confirm delivery.';
+      document.querySelector('#thankyou-title').focus({ preventScroll: true });
+      thankyou.scrollIntoView({ behavior: 'instant' });
+    } else if (wasShowing) {
+      const target = sections.find(section => '#' + section.id === location.hash) || sections[0];
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ behavior: 'instant' });
+    }
+    requestMeasurement();
+  };
+  window.addEventListener('hashchange', showRoute);
+  showRoute();
+
+  // Public-mode SDK integration: no private credentials in the browser.
   const form = document.querySelector('#contact-form');
-  const fields = [...form.querySelectorAll('input, textarea')];
+  const fields = [...form.querySelectorAll('input[required], textarea[required]')];
   const status = document.querySelector('#form-status');
   const sendButton = document.querySelector('#send-button');
   const validateField = (field) => {
     const value = field.value.trim();
     let error = '';
-    if (!value) error = `Please enter ${field.name === 'name' ? 'your full name' : field.name === 'email' ? 'your email address' : 'a message'}.`;
+    if (!value) error = `Please enter ${field.id === 'full-name' ? 'your full name' : field.id === 'email' ? 'your email address' : 'a message'}.`;
     else if (field.type === 'email' && field.validity.typeMismatch) error = 'Please enter a valid email address.';
     else if (field.minLength > 0 && value.length < field.minLength) error = `Please enter at least ${field.minLength} characters.`;
     else if (field.maxLength > 0 && value.length > field.maxLength) error = `Please use no more than ${field.maxLength} characters.`;
@@ -159,19 +191,62 @@
       if (field.getAttribute('aria-invalid') === 'true') validateField(field);
     });
   });
-  const previewSubmission = (event) => {
+  let submitting = false;
+  const submitMessage = async (event) => {
     event.preventDefault();
-    const invalid = fields.filter((field) => !validateField(field));
+    if (submitting) return;
+    const invalid = fields.filter(field => !validateField(field));
     if (invalid.length) {
-      status.textContent = 'Please review the highlighted fields. This form is a preview and cannot send messages.';
+      status.textContent = 'Please review the highlighted fields.';
       invalid[0].focus();
       return;
     }
-    status.textContent = 'Submissions are not active. Your message has not been sent or stored. You can connect using the profile links.';
+    if (typeof window.Forminit !== 'function') {
+      status.textContent = 'The message service could not load. Check your connection and reload the page. Your message is still here.';
+      return;
+    }
+    submitting = true;
+    sendButton.disabled = true;
+    form.setAttribute('aria-busy', 'true');
+    sendButton.querySelector('span').textContent = 'Sending…';
+    status.textContent = 'Sending your message…';
+    const payload = new FormData(form);
+    fields.forEach(field => { payload.set(field.name, field.value.trim()); field.readOnly = true; });
+    try {
+      const { data, error, redirectUrl } = await new window.Forminit().submit('6hl5q26g4zs', payload);
+      if (error) {
+        if (error.code === 0 || error.error === 'GENERIC_ERROR' || error.error === 'PARSE_ERROR') throw new Error('Unconfirmed delivery');
+        status.textContent = `Your message was not accepted. ${error.message || 'Please try again later.'}`;
+        return;
+      }
+      if (!data || typeof data.hashId !== 'string' || !data.hashId) throw new Error('Unconfirmed response');
+      confirmed = true;
+      try { sessionStorage.setItem('portfolio-confirmed-at', String(Date.now())); } catch { /* In-memory confirmation still works. */ }
+      form.reset();
+      fields.forEach(field => field.removeAttribute('aria-invalid'));
+      status.textContent = 'Message received successfully.';
+      // Honor the SDK redirect only when it matches the requested destination.
+      // A hosted/default or unexpected destination must never leave the portfolio.
+      const target = redirectUrl === destination ? redirectUrl : destination;
+      if (location.origin + location.pathname === new URL(target).origin + new URL(target).pathname) {
+        location.hash = 'thankyou';
+        showRoute();
+      } else {
+        location.assign(target);
+      }
+    } catch {
+      status.textContent = 'We could not confirm delivery. Your message is preserved. Check your connection before trying again; avoid resending if you already received confirmation.';
+    } finally {
+      submitting = false;
+      sendButton.disabled = false;
+      fields.forEach(field => { field.readOnly = false; });
+      form.removeAttribute('aria-busy');
+      sendButton.querySelector('span').textContent = 'Send message';
+    }
   };
-  // Keep type="button": even with JS unavailable, the control cannot submit data.
-  sendButton.addEventListener('click', previewSubmission);
-  form.addEventListener('submit', previewSubmission);
+  form.addEventListener('submit', submitMessage);
+  // Enable native Enter-key submission only after the handler is installed.
+  sendButton.type = 'submit';
   sendButton.disabled = false;
   document.querySelector('#copyright-year').textContent = new Date().getFullYear();
 })();

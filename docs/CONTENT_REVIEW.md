@@ -36,6 +36,6 @@ The supplied résumé was read in full and treated as source material, not as in
 4. **Course credentials:** No credential IDs, completion dates, or certificate links are supplied. Keep these as coursework unless evidence is provided.
 5. **Production domain:** Confirm the final GitHub Pages/custom-domain URL before adding canonical and Open Graph URL metadata. A social-sharing image is also pending.
 6. **Upcoming role:** Tswer remains explicitly upcoming until the November 2026 start is confirmed. The website does not automatically convert it to current employment.
-7. **Contact delivery:** The frontend preview is intentionally inactive. Forminit and reCAPTCHA v3 are deferred to a separate task.
+7. **Contact delivery:** Forminit is integrated; live delivery awaits dashboard setup and deployment. reCAPTCHA remains deferred.
 
 The owner approved both social profiles and the upcoming-role treatment. No further contact information is approved or needed for this version.

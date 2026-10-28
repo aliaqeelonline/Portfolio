@@ -1,3 +1,5 @@
+> Latest contact and hover verification: [October 28 update](FORMINIT_VERIFICATION.md). The older inactive-form and hover statements below are historical.
+
 # Verification report
 
 Black/glass redesign verified October 22, 2026 using the installed Chromium browser and Playwright against a loopback-only static HTTP server. This supersedes the original olive-theme checks. The redesign is a local, uncommitted change on `portfolio-preview`.

@@ -1,3 +1,12 @@
+## October 28: Forminit and interaction refinement
+
+- [Desktop header](header-1440.png), [tablet header](header-768.png), [mobile header](header-390.png)
+- [Desktop contact](contact-1440.png), [tablet contact](contact-768.png), [mobile contact](contact-390.png)
+- [Simulated confirmed Thank You](thankyou-desktop.png)
+- [Desktop preview](thankyou-1440.png), [tablet preview](thankyou-768.png), [mobile preview](thankyou-390.png), [light preview](thankyou-light.png)
+
+All submissions in verification were mocked. Older screenshots below document earlier versions, including now-removed card hover effects.
+
 # Black / glass redesign previews
 
 Captured from the local implementation in Chromium on October 22, 2026. These are review images, not website runtime assets. The site content and structure are preserved; black is the default and neutral light mode remains optional.

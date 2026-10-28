@@ -11,7 +11,7 @@ A responsive, editorial portfolio focused on data engineering, analytics, entrep
 - Responsive data-workflow and model-architecture illustrations made with CSS and inline SVG.
 - Scroll reveals that respect reduced-motion preferences and remain readable without JavaScript.
 - Résumé-based experience, technical skills, featured work, education, courses, and training.
-- Accessible contact-form preview with field validation and explicit non-delivery messaging.
+- Accessible Forminit contact form with validation, loading states, and confirmed-success routing.
 - Local assets, system typography, semantic HTML, social metadata, and relative paths.
 
 ## Structure
@@ -23,7 +23,7 @@ Portfolio/
 │   └── style.css              # Tokens, themes, layouts, illustrations, responsive rules
 ├── js/
 │   ├── theme.js               # Small pre-render theme initializer
-│   └── script.js              # Navigation, theme controls, reveals, form preview
+│   └── script.js              # Navigation, theme controls, reveals, Forminit submission
 ├── assets/
 │   └── images/
 │       └── favicon.svg        # Local vector monogram
@@ -39,7 +39,7 @@ Portfolio/
 
 ## Preview locally
 
-Open `index.html` directly in a modern browser. All site functionality works without a server or dependencies. Browsers can limit localStorage on `file://`; if unavailable, theme changes still work for the current visit.
+Open `index.html` directly in a modern browser. The portfolio can be previewed without a server. Contact submission requires JavaScript, the remote Forminit SDK, network access, and an authorized hostname. Browsers can limit localStorage on `file://`; if unavailable, theme changes still work for the current visit.
 
 For an HTTP preview, from the repository root run:
 
@@ -53,7 +53,7 @@ Then visit `http://localhost:8000`. Stop the server with Ctrl+C. This server is 
 
 - Edit the corresponding semantic section in `index.html`. Content remains available if JavaScript is disabled.
 - Add or edit skill badges using the existing `.tags` lists; no JavaScript changes are needed.
-- Duplicate an experience or project article and update its heading, dates, description, and technologies. Keep the single main `h1`, section `h2`s, and article `h3`s.
+- Duplicate an experience or project article and update its heading, dates, description, and technologies. Keep the portfolio `h1`, section `h2`s, and article `h3`s; the alternate Thank You view has its own `h1`.
 - Experience is sorted by start date, newest first. Some jobs and ventures overlap in the source résumé.
 - Replace the project’s “Repository & demo not provided” text with real, verified links when supplied. Do not create placeholder links.
 - Update the Tswer role after its November 2026 start is confirmed. It is intentionally marked **upcoming**, not current.
@@ -94,22 +94,27 @@ When a custom domain is selected, configure it through Pages settings and follow
 
 The HTML includes a title, description, Open Graph title/description/type/locale, and Twitter card type. Add an absolute canonical URL and `og:url` once the production domain is confirmed. Add an absolute `og:image` URL and dimensions after creating an approved social preview image. No deployment URL or preview image is fabricated in metadata.
 
-## Contact form: intentionally inactive
+## Contact form: Forminit
 
-There is no form endpoint, network submission, client-side message storage, email link, API key, Forminit SDK, or reCAPTCHA script. The **Send message — Not active yet** button validates the preview and states that nothing was sent or stored. It never displays a delivery-success message. Without JavaScript, the button stays disabled and the inactive notice remains visible.
+The official browser SDK (`https://forminit.com/sdk/v1/forminit.js`) submits to form `6hl5q26g4zs` in Public mode without API keys. Required fields are `fi-sender-fullName`, `fi-sender-email`, and `fi-text-message`; `_gotcha` is the documented honeypot. Field IDs and the visual layout are retained. Errors preserve data; a confirmed response with a submission ID resets it. Pending requests disable resubmission. No automatic retries are performed.
 
-The fields have stable IDs and names (`full-name` / `name`, `email`, `message`), proper labels, native validation attributes, per-field error containers, and a form status region. A future integration can preserve the layout.
+The SDK's `redirectUrl` is accepted only when it exactly matches `https://aliaqeelonline.github.io/Portfolio/#thankyou`; otherwise that canonical destination is used after confirmed success. Direct fragment visits show a preview notice. A timestamp in sessionStorage (no personal data) retains confirmation across same-tab refreshes for 30 minutes; it is a UI convenience, not an authorization or backend record. If storage is unavailable, the current view still confirms success, while refresh returns to preview mode.
 
-In the separately authorized integration task:
+Manual dashboard setup (not changed by this task):
 
-1. Add the confirmed Forminit configuration and review its supported submission flow.
-2. Add reCAPTCHA v3 using a public site key. Secret verification belongs with a trusted server/service, never GitHub Pages JavaScript.
-3. Replace the preview handler in `js/script.js` with real submission handling, loading states, errors, and confirmed-success messaging. Update the button and inactive notices together.
-4. Add appropriate privacy disclosures and keep private credentials out of the repository.
+1. Set form authentication to **Public**.
+2. Under **Form Settings → Redirections → Custom URL**, enter exactly `https://aliaqeelonline.github.io/Portfolio/#thankyou` and save.
+3. Review authorized domains for `aliaqeelonline.github.io`.
+4. If reCAPTCHA is still required, temporarily disable that requirement in Forminit before testing this integration. No Google library, token, site key, or CAPTCHA response field has been added. The Google Cloud key is untouched.
+5. Retain Forminit spam protection and enable/configure its documented `_gotcha` honeypot if required by the dashboard.
+
+Live delivery remains unverified: this branch is not deployed, dashboard/CAPTCHA settings are inaccessible, and no approved sender email was supplied. After deployment and configuration, send exactly one legitimate test through the actual form using an approved email, verify backend acceptance, the exact redirect, and the dashboard submission. Do not test from an unauthorized hostname or bypass CAPTCHA. The updated Thank You destination will work once this branch is deployed to Pages.
+
+Official HTML, SDK, redirect, and honeypot guides were consulted. The requested `setup.md` could not be retrieved (HTTP 403/tool access error). See `docs/FORMINIT_VERIFICATION.md` for mocked test evidence and limitations.
 
 ## Review and verification
 
-See `docs/CONTENT_REVIEW.md` for the extracted professional summary, content decisions, and missing information, and `docs/VERIFICATION.md` for the completed checks and their limitations. Desktop, tablet, and mobile redesign screenshots are indexed in [`docs/previews/README.md`](docs/previews/README.md). The black/glass redesign is local and uncommitted for review; nothing has been pushed or merged for this update. The original implementation's proposed pull-request description is in `docs/PULL_REQUEST_DRAFT.md`.
+See `docs/CONTENT_REVIEW.md` for the extracted professional summary, content decisions, and missing information, and `docs/VERIFICATION.md` for the completed checks and their limitations. Desktop, tablet, and mobile redesign screenshots are indexed in [`docs/previews/README.md`](docs/previews/README.md). Changes are prepared on `portfolio-preview`; deployment and merging require separate approval. The original implementation's proposed pull-request description is in `docs/PULL_REQUEST_DRAFT.md`.
 
 For a quick syntax check, if Node.js is available:
 
@@ -119,4 +124,4 @@ node --check js/script.js
 git diff --check
 ```
 
-Manual review should cover both themes, 320px mobile through large desktop widths, keyboard navigation, menu Escape behavior, anchor links, reduced motion, and form errors. Verify that entering a valid message produces the inactive notice and no network request. Check without JavaScript and by opening `index.html` directly. External venture websites may change independently and require owner review before publication.
+Manual review should cover both themes, 320px mobile through large desktop widths, keyboard navigation, menu Escape behavior, anchor links, reduced motion, and form errors. Use mocked responses locally; live testing must use an authorized hostname and approved email. Check without JavaScript and by opening `index.html` directly. External venture websites may change independently and require owner review before publication.
