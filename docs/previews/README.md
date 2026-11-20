@@ -1,3 +1,8 @@
+## Deep Learning illustration theme previews
+
+- [Dark theme](deep-learning-dark.png)
+- [Light theme](deep-learning-light.png)
+
 ## October 28: Forminit and interaction refinement
 
 - [Desktop header](header-1440.png), [tablet header](header-768.png), [mobile header](header-390.png)
