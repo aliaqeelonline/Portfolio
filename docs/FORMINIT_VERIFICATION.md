@@ -1,36 +1,25 @@
-# Contact and interaction update — October 28, 2026
+# Forminit contact form verification
 
-Current verification supersedes the earlier inactive-form and card-hover notes in VERIFICATION.md. Tests ran in Chromium; physical-device and Safari/Firefox testing remain outstanding.
+## reCAPTCHA v3 integration
 
-## Implementation
-
-- Header opacity is 68% dark / 72% light, retaining 16px blur and solid accessibility/unsupported-browser fallbacks.
-- Active Rilo Data and Tswer responsibilities use present-tense wording. Tswer retains its verified November 2026 date without implying that workshops have already been delivered.
-- Only button-styled controls have hover rules, using shadows without moving hit areas or switching gradient layers. Keyboard focus and entrance transitions remain.
-- Forminit Public SDK integration uses form 6hl5q26g4zs, full-name/email/message sender fields and the documented `_gotcha` field. No private key or reCAPTCHA integration.
-- Confirmed submission ID required before reset/redirect. The SDK destination is allowlisted to the exact portfolio `#thankyou` URL, with that same URL as fallback.
-- Direct Thank You visits are previews. Same-tab refresh can retain a confirmed state for 30 minutes using only a timestamp, never message contents. The UI marker is not an authoritative backend receipt.
+- The first valid submission loads the Google script using the public site key. The form waits for readiness and then requests a fresh `contact_form` token on every attempt. Readiness and token generation each have a ten-second timeout.
+- The existing Public-mode SDK sends the name, email, message, `_gotcha` honeypot, and `g-recaptcha-response` to Forminit form `6hl5q26g4zs`. Forminit verifies the token server-side after its CAPTCHA setting is configured.
+- If the security check fails or times out, the form retains the visitor's input, restores the submit control, and shows a retry message. Forminit rejections, expiration, and network failures also preserve the input.
+- The form resets and redirects to `https://aliaqeel.com/#thankyou` only after Forminit returns a submission ID. A direct visit shows the preview unless this tab recorded a recent confirmation. The timestamp is a UI state and contains no message data.
+- Google's visible attribution and policy links sit under the contact form controls. The floating badge is hidden to avoid covering controls on small screens.
 
 ## Automated verification
 
-48 browser assertions passed: required fields and focus, payload names, rejection and network failures, malformed success, preserved input, pending/busy states, duplicate suppression, success-only reset, redirect fallback, direct fragment/refresh/return, hover stability, menu/Escape focus, theme and reduced motion, zero horizontal overflow at 320/390/768/1440px, static 12px grid, and no JavaScript exceptions.
+Fourteen Chromium scenarios passed using the published Forminit browser SDK (npm `forminit` 0.2.4), with Google reCAPTCHA simulated and Forminit HTTP requests intercepted. The tests covered validation, SDK payload and honeypot, duplicate suppression, new tokens on retries, missing and malformed tokens, readiness and execution timeouts, blocked scripts, Forminit rejections, expiration, network failure, input preservation, confirmed reset, custom-domain redirect, and direct preview behavior. Both themes were tested at 320, 390, 768, and 1440 pixels.
 
-Five additional cases used the actual published `forminit` npm SDK 0.2.4 with intercepted HTTP responses: success, CAPTCHA rejection, network failure, malformed response, and missing SDK. All passed. The production CDN script could not be fetched in this environment; these tests verify the published SDK contract, not CDN availability.
+The cloud network returned HTTP 403 for the live Google script. Real token issuance, deployed SDK behavior, server-side enforcement, and production delivery remain unverified. No live messages were sent and no dashboard settings were changed.
 
-**Zero real submissions were sent.** The canonical hostname in the browser tests was simulated by request interception; it was not used to bypass hostname restrictions. Test-only `.invalid` email addresses never reached Forminit. Live delivery, dashboard presence, current authentication/CAPTCHA settings, and live redirect remain unverified.
+## Production configuration and verification
 
-## Before the one live test
+1. In Google Cloud, confirm that the existing score-based website key authorizes `aliaqeel.com`. In the key's **Integration** tab, choose **Use legacy key** to get the Legacy Secret Key.
+2. In Forminit, open form `6hl5q26g4zs`. Keep authentication **Public**, verify `aliaqeel.com` in authorized domains if domain restrictions are enabled, and retain the existing spam protection and honeypot settings.
+3. In **Form Settings → CAPTCHA**, choose **reCAPTCHA v3**, enter the Legacy Secret Key there, and save.
+4. In **Form Settings → Redirections → Custom URL**, enter `https://aliaqeel.com/#thankyou` and save.
+5. After deployment, verify production with an approved real submission. Confirm acceptance, the exact Thank You URL, and dashboard receipt. Confirm CAPTCHA enforcement separately through an authorized negative test that verifies a missing or invalid token is rejected.
 
-In Forminit, select form 6hl5q26g4zs:
-
-1. Set authentication to Public.
-2. Form Settings → Redirections → Custom URL: `https://aliaqeelonline.github.io/Portfolio/#thankyou`.
-3. Confirm the authorized hostname `aliaqeelonline.github.io`.
-4. If the existing reCAPTCHA requirement is enabled, temporarily disable it in Forminit. Do not bypass it or alter/delete the Google Cloud key.
-5. Retain built-in spam protection and configure the documented honeypot as needed.
-
-After separately approved deployment, send exactly one test using an approved sender email, verify the successful backend response, exact fragment destination and dashboard receipt. The updated destination requires this version to be deployed. No dashboard settings were changed by this task.
-
-Sources: official HTML, SDK, redirections and honeypot documentation. `https://forminit.com/setup.md` was attempted first but unavailable (HTTP 403 / browser-tool access error).
-
-Screenshots in `docs/previews`: `header-{1440,768,390}.png`, `contact-{1440,768,390}.png`, `thankyou-{1440,768,390}.png`, `thankyou-desktop.png` (simulated confirmed success), and `thankyou-light.png`. Other Thank You screenshots show preview mode.
+[Forminit reCAPTCHA setup](https://forminit.com/docs/recaptcha/) · [Google reCAPTCHA v3](https://developers.google.com/recaptcha/docs/v3) · [Google branding guidance](https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge-what-is-allowed)

@@ -294,6 +294,9 @@ h1 { font-size: clamp(3.25rem, 5.1vw, 4.8rem); margin-top: 26px; }
 .featured-project { border-radius: 18px; }
 .contact-section { background: var(--section-wash); }
 .contact-form { padding: 30px; align-self: start; }
+.recaptcha-notice { margin-top: 14px; color: var(--muted); font-size: .75rem; }
+.recaptcha-notice a { text-decoration: underline; text-underline-offset: .18em; }
+.grecaptcha-badge { visibility: hidden; }
 .tags li { background: var(--section-wash); border-radius: 5px; }
 .pipeline-node, .warehouse-node, .source-chips span { border-radius: 8px; box-shadow: inset 0 1px var(--edge), 0 4px 12px rgb(0 0 0 / 8%); }
 .insight-node { border-radius: 8px; }

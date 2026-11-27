@@ -143,7 +143,7 @@
   }
 
   const thankyou = document.querySelector('#thankyou');
-  const destination = 'https://aliaqeelonline.github.io/Portfolio/#thankyou';
+  const destination = 'https://aliaqeel.com/#thankyou';
   let confirmed = false;
   try { confirmed = Date.now() - Number(sessionStorage.getItem('portfolio-confirmed-at')) < 1800000; } catch { /* Optional refresh continuity. */ }
   const showRoute = () => {
@@ -173,6 +173,53 @@
   const fields = [...form.querySelectorAll('input[required], textarea[required]')];
   const status = document.querySelector('#form-status');
   const sendButton = document.querySelector('#send-button');
+  const recaptchaSiteKey = '6Lem0PgtAAAAAIoOC5DIS3tqqibLjBFLER8P25XD';
+  const recaptchaTimeout = 10000;
+  let recaptchaReady;
+
+  const withRecaptchaTimeout = async (pending) => {
+    let timeout;
+    try {
+      return await Promise.race([pending, new Promise((_, reject) => {
+        timeout = setTimeout(() => reject(new Error('reCAPTCHA timed out')), recaptchaTimeout);
+      })]);
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
+
+  const loadRecaptcha = () => {
+    if (recaptchaReady) return recaptchaReady;
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`;
+    script.async = true;
+    const loading = new Promise((resolve, reject) => {
+      script.addEventListener('error', () => reject(new Error('reCAPTCHA script could not load')), { once: true });
+      script.addEventListener('load', () => {
+        const recaptcha = window.grecaptcha;
+        try {
+          recaptcha.ready(() => resolve(recaptcha));
+        } catch (error) {
+          reject(error);
+        }
+      }, { once: true });
+      document.head.append(script);
+    });
+    // Keep library readiness for later attempts. A failed load can be retried.
+    recaptchaReady = withRecaptchaTimeout(loading).catch((error) => {
+      script.remove();
+      recaptchaReady = undefined;
+      throw error;
+    });
+    return recaptchaReady;
+  };
+
+  const recaptchaErrors = {
+    RECAPTCHA_TOKEN_EXPIRED: 'The security check expired. Please send your message again for a fresh check.',
+    RECAPTCHA_TOKEN_MISSING: 'The security check was missing. Please try sending your message again.',
+    RECAPTCHA_VERIFICATION_FAILED: 'The security check could not verify this submission. Please try again.',
+    RECAPTCHA_INVALID_SECRET: 'The security check is temporarily unavailable. Please try again later or use the profile links.'
+  };
   const validateField = (field) => {
     const value = field.value.trim();
     let error = '';
@@ -212,9 +259,21 @@
     status.textContent = 'Sending your message…';
     const payload = new FormData(form);
     fields.forEach(field => { payload.set(field.name, field.value.trim()); field.readOnly = true; });
+    let failureMessage = 'The security check could not load. Check your connection and try again. Your message is still here.';
     try {
+      const recaptcha = await loadRecaptcha();
+      failureMessage = 'The security check could not finish. Please try again. Your message is still here.';
+      const token = await withRecaptchaTimeout(recaptcha.execute(recaptchaSiteKey, { action: 'contact_form' }));
+      if (typeof token !== 'string' || !token.trim()) throw new Error('Missing reCAPTCHA token');
+      payload.set('g-recaptcha-response', token);
+
+      failureMessage = 'We could not confirm delivery. Your message is preserved. Check your connection before trying again; avoid resending if you already received confirmation.';
       const { data, error, redirectUrl } = await new window.Forminit().submit('6hl5q26g4zs', payload);
       if (error) {
+        if (Object.hasOwn(recaptchaErrors, error.error)) {
+          status.textContent = recaptchaErrors[error.error];
+          return;
+        }
         if (error.code === 0 || error.error === 'GENERIC_ERROR' || error.error === 'PARSE_ERROR') throw new Error('Unconfirmed delivery');
         status.textContent = `Your message was not accepted. ${error.message || 'Please try again later.'}`;
         return;
@@ -235,7 +294,7 @@
         location.assign(target);
       }
     } catch {
-      status.textContent = 'We could not confirm delivery. Your message is preserved. Check your connection before trying again; avoid resending if you already received confirmation.';
+      status.textContent = failureMessage;
     } finally {
       submitting = false;
       sendButton.disabled = false;

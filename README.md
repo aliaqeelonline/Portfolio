@@ -39,7 +39,7 @@ Portfolio/
 
 ## Preview locally
 
-Open `index.html` directly in a modern browser. The portfolio can be previewed without a server. Contact submission requires JavaScript, the remote Forminit SDK, network access, and an authorized hostname. Browsers can limit localStorage on `file://`; if unavailable, theme changes still work for the current visit.
+Open `index.html` directly in a modern browser. The portfolio can be previewed without a server. Contact submission requires JavaScript, network access to Forminit and Google reCAPTCHA, and a hostname authorized by both services. Browsers can limit localStorage on `file://`; if unavailable, theme changes still work for the current visit.
 
 For an HTTP preview, from the repository root run:
 
@@ -98,19 +98,11 @@ The HTML includes a title, description, Open Graph title/description/type/locale
 
 The official browser SDK (`https://forminit.com/sdk/v1/forminit.js`) submits to form `6hl5q26g4zs` in Public mode without API keys. Required fields are `fi-sender-fullName`, `fi-sender-email`, and `fi-text-message`; `_gotcha` is the documented honeypot. Field IDs and the visual layout are retained. Errors preserve data; a confirmed response with a submission ID resets it. Pending requests disable resubmission. No automatic retries are performed.
 
-The SDK's `redirectUrl` is accepted only when it exactly matches `https://aliaqeelonline.github.io/Portfolio/#thankyou`; otherwise that canonical destination is used after confirmed success. Direct fragment visits show a preview notice. A timestamp in sessionStorage (no personal data) retains confirmation across same-tab refreshes for 30 minutes; it is a UI convenience, not an authorization or backend record. If storage is unavailable, the current view still confirms success, while refresh returns to preview mode.
+After validation, the form loads Google reCAPTCHA v3 and requests a fresh `contact_form` token for each attempt. It sends the token as `g-recaptcha-response` for server-side verification by Forminit. The form displays Google's attribution and policy links below the submit control.
 
-Manual dashboard setup (not changed by this task):
+The SDK's `redirectUrl` is accepted only when it exactly matches `https://aliaqeel.com/#thankyou`; otherwise that canonical destination is used after confirmed success. Direct fragment visits show a preview notice. A timestamp in sessionStorage (no personal data) retains confirmation across same-tab refreshes for 30 minutes; it is a UI convenience, not an authorization or backend record. If storage is unavailable, the current view still confirms success, while refresh returns to preview mode.
 
-1. Set form authentication to **Public**.
-2. Under **Form Settings → Redirections → Custom URL**, enter exactly `https://aliaqeelonline.github.io/Portfolio/#thankyou` and save.
-3. Review authorized domains for `aliaqeelonline.github.io`.
-4. If reCAPTCHA is still required, temporarily disable that requirement in Forminit before testing this integration. No Google library, token, site key, or CAPTCHA response field has been added. The Google Cloud key is untouched.
-5. Retain Forminit spam protection and enable/configure its documented `_gotcha` honeypot if required by the dashboard.
-
-Live delivery remains unverified: this branch is not deployed, dashboard/CAPTCHA settings are inaccessible, and no approved sender email was supplied. After deployment and configuration, send exactly one legitimate test through the actual form using an approved email, verify backend acceptance, the exact redirect, and the dashboard submission. Do not test from an unauthorized hostname or bypass CAPTCHA. The updated Thank You destination will work once this branch is deployed to Pages.
-
-Official HTML, SDK, redirect, and honeypot guides were consulted. The requested `setup.md` could not be retrieved (HTTP 403/tool access error). See `docs/FORMINIT_VERIFICATION.md` for mocked test evidence and limitations.
+See [Forminit verification and dashboard setup](docs/FORMINIT_VERIFICATION.md) for the Google Cloud domain, Forminit CAPTCHA and redirect settings, and the remaining production checks.
 
 ## Review and verification
 
